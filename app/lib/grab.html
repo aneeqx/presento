@@ -1,0 +1,19 @@
+<!doctype html><meta charset="utf-8"><body><script>
+// Hidden helper page: decodes one video frame to a JPEG data URL (poster / cover frame). Nothing is shown.
+window.grab = function (src, t, maxW) {
+  return new Promise(function (resolve, reject) {
+    var v = document.createElement("video"); v.muted = true; v.preload = "auto"; v.crossOrigin = "anonymous";
+    var done = false, timer = setTimeout(function () { fin(null, "timeout"); }, 25000);
+    function fin(r, err) { if (done) return; done = true; clearTimeout(timer); v.removeAttribute("src"); v.load(); err ? reject(new Error(err)) : resolve(r); }
+    v.addEventListener("error", function () { fin(null, "video did not decode"); });
+    v.addEventListener("loadedmetadata", function () { var at = t == null ? Math.min(1.5, (v.duration || 2) * 0.1) : t; v.currentTime = Math.max(0, Math.min(at, (v.duration || at) - 0.05)); });
+    v.addEventListener("seeked", function () {
+      var w = v.videoWidth, h = v.videoHeight; if (!w) return fin(null, "no picture");
+      var s = Math.min(1, maxW / w), c = document.createElement("canvas"); c.width = Math.round(w * s); c.height = Math.round(h * s);
+      c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+      fin({ dataUrl: c.toDataURL("image/jpeg", 0.86), w: w, h: h, dur: v.duration, t: v.currentTime });
+    });
+    v.src = src;
+  });
+};
+</script>

@@ -1,0 +1,262 @@
+/* ==========================================================================
+   Page layouts: frame (side + main), home bento, stills masonry, animations / video cards
+   ========================================================================== */
+
+/* ---------- HOME / PANELS (SPEC-R7 §3): four vertical panels; the active one widens to 1.35x, the others 0.883x (total constant) ---------- */
+:root { --pn-in: 28px; --pn-h: min(58vh, calc(100vh - var(--top) - var(--bot))); --pn-chip: 64px; --pn-ico: 34px; --pn-gap: 20px; --pn-m: clamp(72px, 5vw, 110px); --pn-on: 2fr; --pn-off: .65fr; --pn-h-off: 74%; --pn-dim: .22; --pn-blur: 1; }   /* R12: equal inset on 4 sides; focus 2x / others .65x */
+html.is-touch { --pn-gap: 16px; --pn-m: 104px; --pn-h-off: 74%; --pn-chip: 72px; --pn-ico: 40px; }
+.page.home { height: 100vh; min-height: 560px; padding: var(--top) var(--edge) var(--bot); display: flex; align-items: center; }   /* row centred between logo band and bottom bar */
+.bento { width: 100%; height: var(--pn-h); flex: none; display: grid; gap: var(--pn-gap); grid-template-columns: repeat(var(--pn-n, 4), 1fr); grid-template-rows: 1fr; transition: grid-template-columns var(--dur-l) var(--ease-soft); }
+/* focused column sizes (--pn-on / --pn-off) are set inline by home.js for any panel count (5 = one row; 6+ = two rows, see SPEC-LANDING-N) */
+.bento[data-rows="2"] { --pn-h: calc(100vh - var(--top) - var(--bot)); display: grid; grid-template-columns: none; grid-template-rows: 1fr 1fr; transition: grid-template-rows var(--dur-l) var(--ease-soft); position: relative; --pn-h-off: 88%; }
+.bento .row { display: grid; gap: var(--pn-gap); grid-template-columns: repeat(var(--k), 1fr); grid-template-rows: 1fr; min-height: 0; transition: grid-template-columns var(--dur-l) var(--ease-soft); }
+.bento[data-rows="2"] .tile { pointer-events: none; }
+.bento[data-rows="2"].is-focus .tile:not(.on) { height: 100%; }
+.bento[data-rows="2"] .row.focused .tile:not(.on) { height: 88%; }
+.bento[data-rows="2"] .tile-media { height: calc((var(--pn-h) - var(--pn-gap)) / 2 * 1.2); }
+.bento[data-rows="2"] .tile-vt { display: none; }
+.bento[data-rows="2"] .tile::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(8,52,56,.10) 0, transparent 26%, rgba(8,52,56,.30) 52%, rgba(8,52,56,.78) 100%); }
+.tile-ttl { display: none; }
+.bento[data-rows="2"] .tile-ttl { display: block; position: absolute; left: var(--pn-in); right: var(--pn-in); bottom: calc(var(--pn-in) + 40px); transition: opacity var(--dur-xs) var(--ease-out); }
+.bento[data-rows="2"] .tile-ttl h3 { margin: 0; font-weight: 300; letter-spacing: -.03em; line-height: 1.05; font-size: var(--ttl, 26px); color: #fff; text-shadow: 0 1px 8px rgba(0,0,0,.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bento[data-rows="2"] .tile.on .tile-ttl { opacity: 0; }
+/* hit areas on the rest geometry (the live rows resize under the pointer) */
+.hits { position: absolute; inset: 0; z-index: 6; display: grid; grid-template-rows: 1fr 1fr; gap: var(--pn-gap); pointer-events: none; }
+.hits .hrow { display: grid; grid-template-columns: repeat(var(--k), 1fr); gap: var(--pn-gap); }
+.hits .hit { pointer-events: auto; cursor: pointer; }
+/* density tokens (SPEC-LANDING-N section 4) */
+.bento[data-n="5"] { --pn-in: 24px; --pn-chip: 60px; --pn-ico: 30px; }
+html.is-touch .bento[data-n="5"] { --pn-in: 20px; --pn-chip: 56px; --pn-ico: 28px; }
+.bento[data-rows="2"] { --pn-in: 22px; --pn-chip: 52px; --pn-ico: 26px; --ttl: 26px; }
+html.is-touch .bento[data-rows="2"] { --pn-in: 18px; --pn-chip: 52px; --pn-ico: 26px; --ttl: 24px; }
+.bento[data-n="9"], .bento[data-n="10"], .bento[data-n="11"], .bento[data-n="12"] { --pn-in: 18px; --pn-chip: 46px; --pn-ico: 24px; --ttl: 22px; }
+html.is-touch .bento[data-n="9"], html.is-touch .bento[data-n="10"], html.is-touch .bento[data-n="11"], html.is-touch .bento[data-n="12"] { --pn-in: 14px; --pn-chip: 44px; --pn-ico: 22px; --ttl: 19px; }
+.bento[data-n="5"] .tile-vt h3 { font-size: 26px; }
+html.is-touch .bento[data-n="5"] .tile-vt h3 { font-size: 30px; }
+.tile {
+  position: relative; min-width: 0; border-radius: var(--r-xl); overflow: hidden; overflow: clip; contain: layout paint; cursor: pointer; isolation: isolate; text-align: left;
+  background: var(--teal-2); box-shadow: var(--shadow-1); outline-offset: 4px; scale: 1; opacity: 1; height: 100%; align-self: center;
+  transition: height var(--dur-l) var(--ease-soft), scale var(--dur-l) var(--ease-soft), box-shadow var(--dur-l) var(--ease-out);
+}
+/* the media layer is fixed at the expanded width and centred: images never re-layout or rescale while the panel widens */
+.tile-media { position: absolute; overflow: hidden; top: 50%; height: var(--pn-h); left: 50%; width: var(--pn-mw, calc((100vw - 2 * var(--edge) - 3 * var(--pn-gap)) / 3.95 * 2)); translate: -50% -50%; z-index: -2; }
+.tile-el { width: 100%; height: 100%; object-fit: cover; scale: 1.02; transition: scale var(--dur-xl) var(--ease-out); }
+.tile.on .tile-el { scale: 1.06; }
+.tile-blur { z-index: 1; position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); object-fit: cover; filter: blur(14px); opacity: 0; transition: opacity var(--dur-l) var(--ease-out); }
+.tile-shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(8,52,56,0) 55%, rgba(8,52,56,.24) 100%); }
+.tile::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(4,26,28,var(--pn-dim)); opacity: 0; transition: opacity var(--dur-l) var(--ease-out); pointer-events: none; }
+.tile-count { position: absolute; bottom: var(--pn-in); left: var(--pn-in); transition: opacity var(--dur-xs) var(--ease-out); height: 32px; padding: 0 16px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 500; letter-spacing: .05em; }
+/* rest: vertical title, bottom-left; active: it hands over to the glass label card */
+.tile-vt { position: absolute; left: var(--pn-in); top: calc(var(--pn-in) + var(--pn-chip) + 18px); bottom: calc(var(--pn-in) + 44px); display: flex; flex-direction: column; align-items: flex-start; gap: 14px; color: var(--ivory); transition: opacity var(--dur-xs) var(--ease-out); pointer-events: none; }
+.tile-vt .eyebrow { display: none; }
+.tile-vt h3 { margin: 0; writing-mode: vertical-rl; rotate: 180deg; font-weight: 300; letter-spacing: -.03em; line-height: 1; font-size: 28px; }
+html.is-pointer .tile-vt h3 { font-size: 26px; }
+html.is-touch .tile-vt h3 { font-size: 38px; }
+.tile-label { position: absolute; left: var(--pn-in); bottom: var(--pn-in); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); border: 1px solid rgba(255,255,255,.5); padding: 16px 22px 18px; border-radius: var(--r-lg); max-width: calc(100% - 2 * var(--pn-in)); background: rgba(246,243,236,.72); opacity: 0; translate: 0 14px; transition: opacity var(--dur-xs) var(--ease-out), translate var(--dur-m) var(--ease-soft); pointer-events: none; }
+.tile-label .eyebrow { display: block; margin-bottom: 6px; }
+.tile-label h2 { font-weight: 300; letter-spacing: -.03em; line-height: 1; font-size: clamp(26px, 1.9vw, 38px); }
+html.is-pointer .tile-label h2 { font-size: clamp(24px, 1.55vw, 32px); }
+.tile-label p { margin-top: 8px; font-size: 12.5px; color: var(--ink-70); }
+.tile-cta { position: absolute; right: var(--pn-in); top: calc(var(--pn-in) + (var(--pn-chip) - var(--t-pill-h, 46px)) / 2); opacity: 0; translate: 0 14px; transition: opacity var(--dur-xs) var(--ease-out), translate var(--dur-m) var(--ease-soft); }
+.tile.on .tile-label, .tile.on .tile-cta { opacity: 1; translate: 0 0; transition: opacity var(--dur-s) var(--ease-out) 120ms, translate var(--dur-m) var(--ease-soft) 120ms; }
+.tile.on .tile-vt, .tile.on .tile-count { opacity: 0; }
+.bento.is-focus .tile:not(.on) { height: var(--pn-h-off); }
+.bento.is-focus .tile:not(.on)::after { opacity: 1; }
+.bento.is-focus .tile:not(.on) .tile-blur { opacity: var(--pn-blur); }
+.bento.is-focus .tile:not(.on) .tile-vt { opacity: .7; }
+.bento.is-focus .tile:not(.on) .tile-count { opacity: 0; }   /* narrow (.65x) cards: no room for the pill */
+.tile-count { white-space: nowrap; }
+.tile.on { z-index: 3; box-shadow: var(--shadow-2); }
+
+/* ---------- FRAME: glass side panel + main ---------- */
+.page.frame { min-height: 100vh; padding: var(--top) var(--edge) var(--bot); display: grid; grid-template-columns: clamp(292px, 15.5vw, 340px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.side {
+  position: sticky; top: var(--top); border-radius: var(--r-xl); padding: 30px 26px 26px; display: flex; flex-direction: column; gap: 18px;
+  max-height: calc(100vh - var(--top) - 24px);
+}
+.side-top { display: flex; flex-direction: column; gap: 14px; container-type: inline-size; min-width: 0; }
+/* title is sized from the card's own width (cqi) so it always fits; ui.frame also shrinks it further if a long title still overflows */
+.side h1.display { font-size: clamp(34px, 19cqi, 64px); overflow-wrap: anywhere; }
+.chips { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 6px; }
+.side-meta { font-size: 12px; color: var(--ink-50); letter-spacing: .04em; margin-top: 4px; }
+.main { min-width: 0; }
+.pane { will-change: auto; }
+
+/* ---------- STILLS masonry ---------- */
+.masonry { display: flex; gap: 18px; align-items: flex-start; }
+.mcol { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+.m-item {
+  position: relative; display: block; width: 100%; border-radius: var(--r-lg); overflow: hidden; cursor: zoom-in; background: var(--ivory-2);
+  box-shadow: 0 12px 34px -18px rgba(8,52,56,.45); translate: 0 0; transition: translate calc(.7s * var(--m-k, 1)) var(--spring), box-shadow calc(.5s * var(--m-k, 1));
+}
+.m-item img { width: 100%; height: 100%; object-fit: cover; transition: scale calc(1.2s * var(--m-k, 1)) var(--ease-out); scale: 1.01; }
+.m-item:hover { translate: 0 -4px; box-shadow: var(--shadow-2); z-index: 2; }
+.m-item:hover img { scale: 1.07; }
+.m-item .m-cap {
+  position: absolute; left: 14px; right: 14px; bottom: 14px; padding: 11px 16px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  opacity: 0; transform: translateY(10px); transition: opacity calc(.35s * var(--m-k, 1)), transform calc(.6s * var(--m-k, 1)) var(--spring); font-size: 13.5px; font-weight: 500; text-align: left;
+}
+.m-item .m-cap i { width: 28px; height: 28px; border-radius: 50%; background: var(--mint); color: var(--teal); display: grid; place-items: center; flex: none; }
+.m-item .m-cap i svg { width: 15px; height: 15px; }
+.m-item:hover .m-cap, .m-item:focus-visible .m-cap { opacity: 1; transform: none; }
+
+/* ---------- VIDEO CARDS (animations, proptech videos) ---------- */
+.vgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.vcard {
+  position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--r-xl); overflow: hidden; background: var(--teal); cursor: pointer; text-align: left;
+  box-shadow: var(--shadow-1); translate: 0 0; transition: translate calc(.8s * var(--m-k, 1)) var(--spring), box-shadow calc(.5s * var(--m-k, 1));
+}
+.vcard.featured { grid-column: 1 / -1; aspect-ratio: 21 / 9; }
+.vc-poster, .vc-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1; transition: scale calc(1.2s * var(--m-k, 1)) var(--ease-out), opacity calc(.5s * var(--m-k, 1)); }
+.vc-video { opacity: 0; }
+.vcard.live .vc-video { opacity: 1; }
+.vc-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,52,56,0) 50%, rgba(8,52,56,.5)); }
+.vc-play { position: absolute; inset: 0; display: grid; place-items: center; }
+.vc-play .play-btn { transition: transform calc(.7s * var(--m-k, 1)) var(--spring), box-shadow calc(.5s * var(--m-k, 1)); }
+.vcard:hover { translate: 0 -4px; box-shadow: var(--shadow-2); }
+.vcard:hover .vc-poster, .vcard:hover .vc-video { scale: 1.05; }
+.vcard:hover .play-btn { transform: scale(1.14); box-shadow: 0 0 0 14px rgba(47,237,151,.22), 0 16px 40px -8px rgba(47,237,151,.9); }
+.vc-label { position: absolute; left: 16px; bottom: 16px; padding: 12px 20px; border-radius: 22px; display: flex; flex-direction: column; gap: 2px; max-width: calc(100% - 32px); }
+.vc-title { font-size: 17px; font-weight: 500; letter-spacing: -.01em; }
+.vc-meta { font-size: 12.5px; opacity: .65; letter-spacing: .04em; }
+
+/* ---------- PROPTECH tour cards (wide crops of the flat panoramas) ---------- */
+.ptgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.ptcard {
+  position: relative; display: block; width: 100%; aspect-ratio: 2.1 / 1; border-radius: var(--r-xl); overflow: hidden; background: var(--teal); cursor: pointer; text-align: left;
+  box-shadow: var(--shadow-1); translate: 0 0; transition: translate calc(.8s * var(--m-k, 1)) var(--spring), box-shadow calc(.5s * var(--m-k, 1));
+}
+.ptcard.featured { grid-column: 1 / -1; aspect-ratio: 3 / 1; }
+.ptcard img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1; transition: scale calc(1.2s * var(--m-k, 1)) var(--ease-out); }
+.ptcard .pc-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,52,56,0) 55%, rgba(8,52,56,.5)); }
+.ptcard:hover { translate: 0 -4px; box-shadow: var(--shadow-2); } .ptcard:hover img { scale: 1.05; }
+.ptcard .pc-badge { position: absolute; top: 16px; right: 16px; height: 34px; padding: 0 14px 0 7px; border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 500; letter-spacing: .06em; }
+.ptcard .pc-badge i { width: 22px; height: 22px; border-radius: 50%; background: var(--mint); color: var(--teal); display: grid; place-items: center; } .ptcard .pc-badge svg { width: 13px; height: 13px; }
+.ptcard .pc-label { position: absolute; left: 16px; bottom: 16px; padding: 12px 20px; border-radius: 22px; display: flex; flex-direction: column; gap: 2px; max-width: calc(100% - 100px); }
+.ptcard .pc-open { position: absolute; right: 16px; bottom: 16px; width: 46px; height: 46px; border-radius: 50%; background: rgba(246,243,236,.72); color: var(--teal); display: grid; place-items: center; transition: background calc(.3s * var(--m-k, 1)), scale calc(.6s * var(--m-k, 1)) var(--spring); }
+.ptcard .pc-open svg { width: 18px; height: 18px; } .ptcard:hover .pc-open { background: var(--mint); scale: 1.08; }
+
+@media (max-width: 1180px) {
+  .page.frame { grid-template-columns: 1fr; }
+  .side { position: relative; top: auto; max-height: none; }
+  .chips { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* ---------- CONTACT (SPEC-R7 §6.2) ---------- */
+.page.contact { --ct-h: clamp(30px, 3.2vw, 120px); --ct-v: clamp(14px, .95vw, 36px); --ct-l: clamp(10.5px, .62vw, 24px); --ct-s: clamp(11px, .7vw, 26px); position: fixed; inset: 0; z-index: 1; min-height: 100vh; font-family: "DM Sans", var(--font); color: #fff; --ct-pad: clamp(32px, 4.5vw, 96px); }
+html.is-touch .page.contact { --ct-pad: calc(var(--t-edge) * 1.5); }
+.ct-bg { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #7EA68C 0%, #587767 38%, #3C5649 60%, #263B34 82%, #1E2E2B 100%); }
+.ct-bg::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(18,36,30,.22) 0%, rgba(18,36,30,0) 70%); }
+.ct-sheen { position: absolute; left: -10%; right: -10%; top: 18%; height: 14%; background: linear-gradient(90deg, rgba(255,255,255,.22), rgba(255,255,255,.06)); transform: rotate(-22deg); transform-origin: 0 50%; filter: blur(40px); mix-blend-mode: soft-light; }
+.ct-lines { position: absolute; inset: -20%; background: repeating-linear-gradient(-22deg, rgba(255,255,255,.14) 0 1px, transparent 1px calc(6px * 100vw / 1920)); -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.2) 0%, #000 35%, #000 75%, rgba(0,0,0,.3) 100%); mask-image: linear-gradient(180deg, rgba(0,0,0,.2) 0%, #000 35%, #000 75%, rgba(0,0,0,.3) 100%); }
+.ct-vig { position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.25) 100%); }
+.ct-body { position: absolute; inset: 0; padding: calc(var(--top) + 3vh) var(--ct-pad) 6vh; display: flex; flex-direction: column; }
+.ct-h { margin: 0; font-weight: 400; font-size: var(--ct-h); letter-spacing: -.012em; line-height: 1.1; white-space: nowrap; }
+.ct-sub { margin: calc(var(--ct-h) * .62) 0 0; font-weight: 400; font-size: var(--ct-s); letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.85); text-shadow: 0 1px 12px rgba(0,0,0,.25); }
+.ct-info { margin-top: auto; display: flex; flex-direction: column; gap: calc(10.4vh - 2.8em); }
+.ct-g { display: flex; flex-direction: column; gap: .5em; min-height: 2.8em; }
+.ct-l { font-weight: 700; font-size: var(--ct-l); letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.92); }
+.ct-v { font-weight: 400; font-size: var(--ct-v); line-height: 1.4; color: #fff; text-decoration: none; text-underline-offset: 4px; text-decoration-thickness: 1px; transition: text-decoration-color var(--dur-xs); text-decoration-line: underline; text-decoration-color: transparent; width: max-content; max-width: 100%; }
+a.ct-v:hover { text-decoration-color: rgba(255,255,255,.6); }
+html.is-touch .page.contact { --ct-h: clamp(34px, 4.6vw, 64px); --ct-v: 17px; --ct-l: 12px; --ct-s: 13px; }
+html.is-touch .ct-h { white-space: normal; max-width: 16ch; }
+html.is-touch a.ct-v { padding: 14px 0; margin: -14px 0; }
+.ct-brand { position: absolute; right: var(--ct-pad); bottom: 6vh; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; opacity: .85; }
+.ct-logo { height: clamp(22px, 1.6vw, 60px); width: auto; filter: brightness(0) invert(1); }
+.ct-tag { font-weight: 400; font-size: clamp(10px, .62vw, 24px); letter-spacing: .34em; text-transform: uppercase; color: rgba(255,255,255,.8); }
+@media (max-width: 1180px) { .ct-h { white-space: normal; max-width: 14ch; } }
+/* one logo on the contact page: the white one bottom-right; hide the bar's coloured logo (it is only ever shown on light surfaces) */
+body:has(.page.contact) #logo { opacity: 0; }
+
+/* section icons on the panels (R9): a glass chip on the panel's left axis (x = --pn-in), top row.
+   Left axis (all share x = 28): chip -> count pill -> ... -> number -> vertical title. Top-right: Explore pill, vertically centred on the chip.
+   Rest = glass-dark chip, ivory line icon; active panel = mint chip, teal icon (the icon's own mint fill + knock-out sits inside it); dimmed panels fade. */
+.tile-ico { position: absolute; left: var(--pn-in); top: var(--pn-in); width: var(--pn-chip); height: var(--pn-chip); border-radius: 50%; display: grid; place-items: center; color: var(--ivory); background: rgba(8,52,56,.5); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); border: 1px solid rgba(255,255,255,.18); box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 10px 24px -14px rgba(0,0,0,.5); opacity: .96; transition: background-color var(--dur-m) var(--ease-out), color var(--dur-m) var(--ease-out), border-color var(--dur-m) var(--ease-out), opacity var(--dur-l) var(--ease-out); pointer-events: none; }
+.tile-ico svg { width: var(--pn-ico); height: var(--pn-ico); display: block; }
+.tile.on .tile-ico { background-color: var(--mint); color: var(--teal); border-color: transparent; opacity: 1; }
+.bento.is-focus .tile:not(.on) .tile-ico { opacity: .6; }
+html.is-touch .tile.on .tile-cta .btn-pill { position: relative; overflow: hidden; }
+html.is-touch .tile.on .tile-cta .btn-pill::after { content: ""; position: absolute; top: -10%; bottom: -10%; left: -70%; width: 55%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.7), transparent); transform: skewX(-20deg); pointer-events: none; animation: glare 1.1s var(--ease-io) 1 both, shimmer 3.6s var(--ease-io) 1.8s infinite; }
+@keyframes glare { from { transform: skewX(-20deg) translateX(0); } to { transform: skewX(-20deg) translateX(460%); } }
+@keyframes shimmer { 0%, 70%, 100% { transform: skewX(-20deg) translateX(0); opacity: .35; } 85% { transform: skewX(-20deg) translateX(460%); opacity: .35; } }
+
+html.is-pointer .side h1.display { font-size: clamp(28px, 13cqi, 40px); font-weight: 300; letter-spacing: -.03em; }
+html.is-pointer .m-item .m-cap { font-size: 12.5px; }
+html.is-pointer .vc-title { font-size: 15.5px; }
+html.is-pointer .vc-meta, html.is-pointer .ptcard .pc-badge { font-size: 11.5px; }
+html.is-pointer .tile-label p { font-size: 12px; }
+
+/* R01/R02: two items fill the height (stacked strips) instead of floating in the top third */
+.ptgrid:has(.ptcard:nth-child(2):last-child), .vgrid:has(.vcard:nth-child(2):last-child) { grid-template-columns: 1fr; grid-auto-rows: 1fr; min-height: calc(100vh - var(--top) - var(--edge)); }
+.ptgrid:has(.ptcard:nth-child(2):last-child) .ptcard, .vgrid:has(.vcard:nth-child(2):last-child) .vcard { aspect-ratio: auto; }
+
+/* ==========================================================================
+   CONTACT · R10 redesign (Swiss two-column grid). Same markup, CSS only.
+   Left column: headline, subline (top) · logo + tagline (bottom). Right column: the four details as a ruled table, bottom-aligned
+   to the logo baseline. Both columns share the page margin (--ct-pad) and one bottom line (6vh).
+   ========================================================================== */
+.page.contact { --ct-h: clamp(30px, 3.1vw, 120px); --ct-v: clamp(15px, 1.05vw, 40px); --ct-l: clamp(10.5px, .62vw, 24px); --ct-gap: clamp(40px, 5vw, 200px); }
+.ct-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-rows: auto 1fr auto; column-gap: var(--ct-gap); padding: calc(var(--top) + 6vh) var(--ct-pad) 6vh; }
+.ct-h { grid-column: 1; grid-row: 1; white-space: normal; max-width: 11.5em; font-size: var(--ct-h); letter-spacing: -.015em; line-height: 1.12; text-wrap: balance; }
+.ct-sub { grid-column: 1; grid-row: 2; align-self: start; margin: calc(var(--ct-h) * .9) 0 0; padding-top: calc(var(--ct-h) * .5); border-top: 1px solid rgba(255,255,255,.28); max-width: 26em; line-height: 1.7; }
+.ct-brand { position: static; grid-column: 1; grid-row: 3; align-self: end; align-items: flex-start; gap: calc(var(--ct-h) * .38); opacity: .95; }
+.ct-info { grid-column: 2; grid-row: 1 / span 3; align-self: end; margin: 0; gap: 0; border-bottom: 1px solid rgba(255,255,255,.28); }
+.ct-g { display: grid; grid-template-columns: minmax(7.5em, 30%) minmax(0, 1fr); align-items: baseline; gap: 0 1.5em; min-height: 0; padding: clamp(18px, 3vh, 40px) 0; border-top: 1px solid rgba(255,255,255,.28); }
+.ct-l { font-size: var(--ct-l); }
+.ct-v { font-size: var(--ct-v); line-height: 1.45; width: auto; max-width: 100%; overflow-wrap: anywhere; }
+html.is-touch .page.contact { --ct-h: clamp(34px, 4.2vw, 64px); --ct-v: 18px; --ct-l: 12px; --ct-gap: 40px; }
+html.is-touch .ct-h { white-space: normal; max-width: 11.5em; }
+html.is-touch a.ct-v { padding: 12px 0; margin: -12px 0; }
+@media (max-width: 900px) {
+  .ct-body { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto; row-gap: 32px; overflow-y: auto; }
+  .ct-sub { grid-row: 2; margin-top: 0; }
+  .ct-info { grid-column: 1; grid-row: 3; }
+  .ct-brand { grid-row: 4; }
+}
+
+/* R12c: soft shadow behind the vertical panel labels so they read on bright renders */
+.tile-vt h3, .tile-vt .eyebrow { text-shadow: 0 0 2px rgba(0,0,0,calc(.35 * var(--lbl-sh, 1))), 0 1px 6px rgba(0,0,0,calc(.35 * var(--lbl-sh, 1))), 0 2px 28px rgba(0,0,0,calc(.55 * var(--lbl-sh, 1))); }   /* Look token: label shadow strength */
+.tile-vt h3 { position: relative; isolation: isolate; }
+.tile-vt h3::before { content: ""; position: absolute; inset: -22px -20px; z-index: -1; pointer-events: none; background: radial-gradient(closest-side, rgba(0,0,0,calc(.30 * var(--lbl-sh, 1))), rgba(0,0,0,calc(.12 * var(--lbl-sh, 1))) 60%, transparent); }
+
+/* ==========================================================================
+   R13 · BOUNDED SCROLL FRAME. On two-column section pages the window no longer scrolls: .main is the scroll container, from the top of the
+   info card (--top) to just above the bottom bar (--bot). Soft mask fade at both cut edges; nothing ever scrolls behind the logo or the bar.
+   --sf-fade = fade length; .main extends --sf-fade beyond the frame (padding) so the first/last row sits exactly on the frame edge when at rest.
+   ========================================================================== */
+:root { --sf-fade: 18px; --sf-side: 36px; }
+@media (min-width: 1181px) { html.is-pointer .page.frame { --frame-on: 1; } }
+@media (min-width: 1181px), (min-width: 900px) { html.is-touch .page.frame { --frame-on: 1; } }
+html.is-pointer .page.frame, html.is-touch .page.frame { min-height: 0; }
+@media (min-width: 1181px) {
+  html.is-pointer .page.frame { height: 100vh; overflow: hidden; grid-template-rows: minmax(0, 1fr); align-items: stretch; padding-bottom: var(--bot); }
+  html.is-pointer .page.frame > .side { align-self: start; position: relative; top: auto; max-height: 100%; overflow: auto; scrollbar-width: none; }
+  html.is-pointer .page.frame > .main { min-height: 0; margin: calc(-1 * var(--sf-fade)) calc(-1 * var(--sf-side)); padding: var(--sf-fade) var(--sf-side); height: calc(100% + 2 * var(--sf-fade)); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--sf-fade), #000 calc(100% - var(--sf-fade)), transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 var(--sf-fade), #000 calc(100% - var(--sf-fade)), transparent 100%); }
+  html.is-pointer .page.frame > .main::-webkit-scrollbar { display: none; }
+  html.is-pointer .phone-col { top: 0; }
+}
+@media (min-width: 900px) {
+  html.is-touch .page.frame { height: 100vh; overflow: hidden; grid-template-rows: minmax(0, 1fr); align-items: stretch; padding-bottom: var(--bot); }
+  html.is-touch .page.frame > .side { align-self: start; position: relative; top: auto; max-height: 100%; overflow: auto; scrollbar-width: none; }
+  html.is-touch .page.frame > .main { min-height: 0; margin: calc(-1 * var(--sf-fade)) calc(-1 * var(--sf-side)); padding: var(--sf-fade) var(--sf-side); height: calc(100% + 2 * var(--sf-fade)); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--sf-fade), #000 calc(100% - var(--sf-fade)), transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 var(--sf-fade), #000 calc(100% - var(--sf-fade)), transparent 100%); }
+  html.is-touch .page.frame > .main::-webkit-scrollbar { display: none; }
+  html.is-touch .phone-col { top: 0; }
+}
+
+/* right-hand bar buttons = same height as the pills (Back/Finish), same centre line; Restart only quieter in colour */
+:root { --bar-btn: var(--bar-pill); --bar-ico: 20px; }
+html.is-touch { --bar-ico: 26px; }
+#bar .icon-btn svg { width: var(--bar-ico); height: var(--bar-ico); }
+#bar .icon-btn.quiet, #bar #btn-restart { width: var(--bar-btn); height: var(--bar-btn); }
+html.is-pointer .page.frame > .side, html.is-touch .page.frame > .side { z-index: 2; }
+/* R13b: more breathing room between the scroll frame's fade and the bottom bar */
+@media (min-width:1181px) { html.is-pointer .page.frame { padding-bottom: calc(var(--bot) + 28px); } }
+@media (min-width:900px)  { html.is-touch .page.frame   { padding-bottom: calc(var(--bot) + 24px); } }
+/* R13c: no cropping at rest. The fade only appears on an edge that has more content hidden past it (classes set by shell.js);
+   brochures are sized to fit the frame whole (book + 20 gap + 86 info card). */
+html.is-pointer .page.frame > .main, html.is-touch .page.frame > .main { --ft: 0px; --fb: 0px;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--ft), #000 calc(100% - var(--fb)), transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 var(--ft), #000 calc(100% - var(--fb)), transparent 100%); }
+.page.frame .profiles { --book-w: min(520px, calc(50cqw - 12px), calc((100vh - var(--top) - var(--bot) - 28px - 106px - 2 * var(--sf-fade)) * .7071)); }
+/* the product owner prefers the clean cut at the frame edges: no fade at all */
+html.is-pointer .page.frame > .main, html.is-touch .page.frame > .main { -webkit-mask-image: none; mask-image: none; }

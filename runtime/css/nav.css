@@ -1,0 +1,26 @@
+/* ---------- shared navigation (SPEC-R7 §2): one bar on every page and overlay; overlays keep only their content ---------- */
+:root { --nav-top: 20px; --nav-side: var(--edge); }
+/* overlays' own close / counter / back controls are replaced by the bar's Back pill + label slot */
+.lb-top, .pl-top, .pv-info, .pv-back, .cb-close, .cb-top { display: none !important; }
+#bar.on-dark .icon-btn { background: rgba(8,52,56,.62); color: var(--ivory); border-color: rgba(255,255,255,.16); box-shadow: none; }
+#bar.on-dark .icon-btn:hover { background: var(--mint); color: var(--teal); border-color: var(--mint); }
+#bar.on-dark .icon-btn.quiet, #bar.on-dark #btn-restart { background: none; border-color: transparent; color: rgba(246,243,236,.7); }
+#bar.on-dark .icon-btn.quiet:hover, #bar.on-dark #btn-restart:hover { background: var(--mint); color: var(--teal); }
+#logo { transition: opacity var(--dur-s) var(--ease-io); }
+body.nav-dark #logo { opacity: 0; }          /* the logo artwork is black + green: it is only ever shown on light surfaces */
+body.in-attract #bar { visibility: hidden; }
+/* "View in 360°" sits below the image, centred above the caption */
+.lb-actions { top: auto; bottom: 138px; }
+/* flipbook hint under the bar */
+.cb-hint { top: calc(var(--bar-top) + var(--logo-h) + 12px); }
+
+/* disabled (not hidden) nav buttons keep their place on every page */
+#bar .btn-pill:disabled, #bar .icon-btn:disabled { opacity: .35; pointer-events: none; }
+
+/* R12b: Back is a labelled pill at bottom-left, beside Finish; light so Finish stays the primary action */
+#bar .btn-pill.back.light { background: var(--solid); color: var(--ink); box-shadow: 0 0 0 1px rgb(var(--ink-rgb) / .14), 0 10px 26px -14px rgb(var(--ink-rgb) / .45); }
+#bar .btn-pill.back.light .bp-ico { background: rgb(var(--ink-rgb) / .08); color: var(--ink); box-shadow: none; }
+#bar .btn-pill.back.light:hover .bp-ico { background: var(--teal); color: var(--ivory); }
+/* R12b: Restart keeps a solid circle so it stays visible over photos; still understated (smaller, softer icon) */
+#bar .icon-btn.quiet, #bar #btn-restart { background: var(--solid); border-color: rgb(var(--ink-rgb) / .10); box-shadow: 0 8px 20px -12px rgb(var(--ink-rgb) / .45); color: var(--ink); opacity: 1; }
+#bar.on-dark .icon-btn.quiet, #bar.on-dark #btn-restart { background: rgba(246,243,236,.10); border-color: rgba(246,243,236,.18); color: rgba(246,243,236,.85); }

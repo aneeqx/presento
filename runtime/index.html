@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="vendor/pannellum/pannellum.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/overlays.css">
+<link rel="stylesheet" href="css/graphics.css">
+<!--ADDON:FLIPBOOK-CSS-->
+<link rel="stylesheet" href="css/nav.css">
+<link rel="stylesheet" href="css/touch.css">   <!-- html.is-touch only -->
+<link rel="stylesheet" href="css/look.css">    <!-- generated: Look tokens -->
+</head>
+<body class="booting">
+
+<!-- ambient background: soft mint orbs over ivory -->
+<div id="bg" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i></div>
+
+<!-- persistent glass bar (back / home / crumb) -->
+<header id="bar" aria-label="Navigation">
+  <div class="bar-left">
+    <button id="btn-back" class="btn-pill" type="button" aria-label="Back"></button>
+    <button id="btn-finish" class="btn-pill" type="button" aria-label="Finish"></button>
+  </div>
+  <div class="bar-mid"></div>
+  <div class="bar-right">
+    <span id="crumb" class="eyebrow"></span>
+    <button id="btn-home" class="icon-btn" type="button" aria-label="Home" title="Home"></button>
+    <button id="btn-restart" class="icon-btn quiet" type="button" aria-label="Restart" title="Restart"></button>
+    <button id="btn-fs" class="icon-btn" type="button" aria-label="Fullscreen" title="Fullscreen"></button>
+  </div>
+</header>
+
+<!-- logo: big in the landing intro, then docks in the bar -->
+<div id="logo" aria-label="{{TITLE}}"></div>
+
+<main id="stage"></main>
+
+<!-- quick logo loader shown between page fly-out and fly-in -->
+<div id="loader" aria-hidden="true"></div>
+
+<!-- lightbox / video player live here -->
+<div id="overlays"></div>
+
+<!-- shared SVG filters: per-tile directional motion blur (created by JS) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="mb-defs"></g>
+  </defs>
+</svg>
+
+<script src="content/data.js"></script>
+<script src="vendor/pannellum/pannellum.js"></script>
+
+<!-- core -->
+<script src="js/core/util.js"></script>
+<script src="js/core/input.js"></script>
+<script src="js/core/icons.js"></script>
+<script src="js/core/fly.js"></script>
+<script src="js/core/router.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/core/lightbox.js"></script>
+<script src="js/core/pano360.js"></script>
+<script src="js/core/player.js"></script>
+<script src="js/core/shell.js"></script>
+
+<!-- sections (one file each) -->
+<script src="js/sections/home.js"></script>
+<script src="js/sections/section.js"></script>
+<!--ADDON:FLIPBOOK-->
+<script src="js/sections/profiles.js"></script>
+<script src="js/sections/phone.js"></script>
+<script src="js/sections/social.js"></script>
+<script src="js/sections/contact.js"></script>
+
+<script src="js/core/boot.js"></script>
+</body>
+</html>

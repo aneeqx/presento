@@ -1,0 +1,134 @@
+/* ==========================================================================
+   Graphics (profiles cards, flipbook placeholder, social gallery, iPhone + Instagram-style app) and Proptech (360 stage)
+   ========================================================================== */
+
+/* ---------- company profiles ---------- */
+.profiles { container-type: inline-size; display: grid; justify-content: center; align-items: start; grid-template-columns: repeat(auto-fit, var(--book-w)); gap: 32px 24px; --book-w: min(520px, calc(50cqw - 12px), calc((100vh - var(--top) - 150px) * .7071)); }
+.pf-card { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+.pf-book { perspective: 1400px; width: var(--book-w); cursor: pointer; }
+.pf-cover {
+  position: relative; aspect-ratio: 900 / 1273; border-radius: 6px 18px 18px 6px; overflow: hidden; transform-style: preserve-3d;
+  box-shadow: 0 40px 60px -30px rgba(8,52,56,.6), 0 0 0 1px rgba(8,52,56,.06); transition: transform calc(.8s * var(--m-k, 1)) var(--spring);
+}
+.pf-cover img { width: 100%; height: 100%; object-fit: cover; }
+.pf-edge { position: absolute; left: 0; top: 0; bottom: 0; width: 18px; background: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.18) 40%, transparent); }
+.pf-shine { position: absolute; inset: 0; background: radial-gradient(circle at var(--sx, 50%) 30%, rgba(255,255,255,.35), transparent 55%); opacity: 0; transition: opacity calc(.4s * var(--m-k, 1)); }
+.pf-book:hover .pf-shine { opacity: 1; }
+.pf-info { flex: 1 1 auto; width: var(--book-w); min-height: 86px; border-radius: 26px; padding: 14px 14px 14px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
+.pf-text { min-width: 0; }
+.pf-text h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; font-size: 19px; letter-spacing: -.02em; margin-top: 3px; }
+
+/* ---------- social: gallery + phone ---------- */
+.social { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 44px; align-items: start; }
+.sg-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; max-width: 520px; }
+.sg-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.sg-item { position: relative; aspect-ratio: 1; border-radius: 24px; overflow: hidden; cursor: zoom-in; background: var(--ivory-2); box-shadow: 0 12px 34px -18px rgba(8,52,56,.45); translate: 0 0; transition: translate calc(.7s * var(--m-k, 1)) var(--spring), box-shadow calc(.5s * var(--m-k, 1)); }
+.sg-item img { width: 100%; height: 100%; object-fit: cover; transition: scale calc(1.2s * var(--m-k, 1)) var(--ease-out); }
+.sg-item:hover { translate: 0 -3px; box-shadow: var(--shadow-2); z-index: 2; } .sg-item:hover img { scale: 1.07; }
+.sg-item .m-cap { position: absolute; left: 10px; right: 10px; bottom: 10px; padding: 8px 12px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; opacity: 0; transform: translateY(8px); transition: opacity calc(.35s * var(--m-k, 1)), transform calc(.6s * var(--m-k, 1)) var(--spring); font-size: 12.5px; font-weight: 500; }
+.sg-item .m-cap i { width: 24px; height: 24px; border-radius: 50%; background: var(--mint); color: var(--teal); display: grid; place-items: center; }
+.sg-item .m-cap i svg { width: 13px; height: 13px; }
+.sg-item:hover .m-cap { opacity: 1; transform: none; }
+.sg-multi { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-style: normal; }
+.phone-col { position: sticky; top: var(--top); }
+
+/* ---------- iPhone frame ---------- */
+.phone-wrap { --ps: min(.8, calc((100vh - var(--top) - 24px) / 984)); position: relative; width: calc(468px * var(--ps)); height: calc(984px * var(--ps)); }
+.phone {
+  position: absolute; left: 0; top: 0; width: 468px; height: 984px; transform: scale(var(--ps)); transform-origin: 0 0; border-radius: 78px;
+  background: linear-gradient(145deg, #3b4b4c 0%, #121d1e 28%, #2e4142 52%, #0c1516 78%, #324547 100%);
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.28), inset 0 0 0 7px #060c0d, 0 0 0 1px rgba(0,0,0,.5), 0 50px 90px -24px rgba(8,52,56,.65), 0 20px 40px -20px rgba(0,0,0,.5);
+}
+.ph-btn { position: absolute; width: 5px; border-radius: 3px; background: linear-gradient(90deg, #1b2829, #4b5d5e 50%, #1b2829); }
+.ph-btn.act { left: -4px; top: 168px; height: 40px; } .ph-btn.vup { left: -4px; top: 250px; height: 68px; } .ph-btn.vdn { left: -4px; top: 336px; height: 68px; }
+.ph-btn.pwr { right: -4px; top: 290px; height: 108px; }
+.ph-screen {
+  position: absolute; inset: 14px; border-radius: 64px; overflow: hidden; background: #fff; color: #111; isolation: isolate;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif; font-size: 15px; line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+}
+.ph-screen::after { content: ""; position: absolute; inset: 0; z-index: 50; pointer-events: none; background: linear-gradient(118deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,0) 28%); }
+.ph-island { position: absolute; z-index: 45; top: 13px; left: 50%; width: 128px; height: 38px; margin-left: -64px; background: #000; border-radius: 22px; }
+.ph-lens { position: absolute; right: 14px; top: 11px; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #25356a, #0a0f24 60%, #000); box-shadow: inset 0 0 0 1.5px #111; }
+.ph-status { position: absolute; z-index: 40; top: 0; left: 0; right: 0; height: 58px; display: flex; justify-content: space-between; align-items: center; padding: 6px 40px 0 52px; color: #000; transition: color calc(.3s * var(--m-k, 1)); }
+.ph-time { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.ph-icons { display: flex; gap: 6px; align-items: center; }
+.ph-screen.dark-status .ph-status { color: #fff; }
+.ph-home { position: absolute; z-index: 44; bottom: 9px; left: 50%; width: 152px; height: 5px; margin-left: -76px; border-radius: 3px; background: #111; transition: background calc(.3s * var(--m-k, 1)); }
+.ph-screen.dark-status .ph-home { background: #fff; }
+
+/* ---------- Instagram-style app ---------- */
+.ig { position: absolute; inset: 0; background: #fff; overflow: hidden; }
+.ig-view { position: absolute; inset: 0; padding-top: 56px; background: #fff; }
+.v-post { display: flex; flex-direction: column; box-shadow: -10px 0 40px rgba(0,0,0,.18); }
+.ig-scroll { position: relative; height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding-bottom: 104px; }
+.ig-scroll::-webkit-scrollbar { display: none; }
+.ig-top { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; }
+.ig-uname { display: flex; align-items: center; gap: 6px; font-size: 21px; font-weight: 700; letter-spacing: -.02em; }
+.ig-ver { width: 17px; height: 17px; color: #1fc8a0; display: inline-flex; } .ig-ver svg { width: 100%; height: 100%; }
+.ig-chev { width: 18px; height: 18px; display: inline-flex; margin-left: -2px; } .ig-chev svg, .ig-top-r svg { width: 100%; height: 100%; }
+.ig-top-r { display: flex; gap: 22px; } .ig-top-r i { width: 27px; height: 27px; display: inline-flex; }
+.ig-head { padding: 6px 18px 0; display: flex; align-items: center; gap: 26px; }
+.ig-ring { width: 94px; height: 94px; border-radius: 50%; padding: 3px; flex: none; background: conic-gradient(from 200deg, #2FED97, #17b39d, #083438, #2FED97); }
+.ig-ring img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; object-fit: cover; }
+.ig-stats { flex: 1; display: flex; justify-content: space-around; text-align: center; }
+.ig-stats b { display: block; font-size: 18px; font-weight: 700; } .ig-stats span { font-size: 14px; color: #262626; }
+.ig-bio { padding: 12px 18px 0; font-size: 14.5px; line-height: 1.38; }
+.ig-bio b { font-size: 15px; } .ig-cat { color: #737373; } .ig-link { color: #0a6e68; font-weight: 600; margin-top: 2px; }
+.ig-btns { display: flex; gap: 8px; padding: 14px 18px 0; }
+.ig-btn { flex: 1; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 14px; font-weight: 600; background: #efefef; }
+.ig-btn.sq { flex: none; width: 42px; } .ig-btn.sq svg { width: 18px; height: 18px; }
+.ig-hl { display: flex; gap: 16px; padding: 18px 18px 8px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 18px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 18px), transparent); }
+.ig-hl::-webkit-scrollbar { display: none; }
+.ig-hl-i { flex: none; width: 74px; text-align: center; }
+.ig-hl-ring { display: block; width: 74px; height: 74px; border-radius: 50%; border: 1.5px solid #cfcfcf; padding: 3px; transition: transform calc(.5s * var(--m-k, 1)) var(--spring); }
+.ig-hl-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.ig-hl-i:hover .ig-hl-ring { transform: scale(1.06); } .ig-hl-i:active .ig-hl-ring { transform: scale(.94); }
+.ig-hl-t { display: block; margin-top: 6px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ig-tabs { display: flex; border-top: 1px solid #dbdbdb; margin-top: 10px; }
+.ig-tabs i { flex: 1; height: 50px; display: grid; place-items: center; color: #8e8e8e; border-bottom: 1.5px solid transparent; }
+.ig-tabs i.on { color: #111; border-color: #111; } .ig-tabs svg { width: 26px; height: 26px; }
+.ig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.ig-cell { position: relative; aspect-ratio: 1; background: #efefef; overflow: hidden; }
+.ig-cell img { width: 100%; height: 100%; object-fit: cover; transition: transform calc(.6s * var(--m-k, 1)) var(--ease-out), filter calc(.3s * var(--m-k, 1)); }
+.ig-cell:hover img { transform: scale(1.05); filter: brightness(.92); }
+.ig-multi { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; color: #fff; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); } .ig-multi svg { width: 100%; height: 100%; }
+.ig-tabbar { position: absolute; z-index: 30; left: 0; right: 0; bottom: 0; height: 92px; padding-top: 14px; display: flex; justify-content: space-around; align-items: flex-start; background: rgba(255,255,255,.94); border-top: 1px solid #ececec; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.ig-tabbar i { width: 30px; height: 30px; display: grid; place-items: center; color: #111; cursor: pointer; } .ig-tabbar svg { width: 28px; height: 28px; }
+.ig-tabbar .me img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px #fff, 0 0 0 3.500px #111; }
+.ig-pbar { height: 48px; display: grid; grid-template-columns: 56px 1fr 56px; align-items: center; border-bottom: 1px solid #efefef; flex: none; }
+.ig-back { width: 56px; height: 48px; display: grid; place-items: center; } .ig-back svg { width: 26px; height: 26px; }
+.ig-ptitle { text-align: center; line-height: 1.1; } .ig-ptitle small { display: block; font-size: 11.5px; color: #737373; } .ig-ptitle b { font-size: 16px; }
+.v-post .ig-scroll { flex: 1; height: auto; }
+.ig-post { padding-bottom: 20px; }
+.ig-ph { display: flex; align-items: center; gap: 10px; padding: 10px 14px; }
+.ig-ph-av { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex: none; box-shadow: 0 0 0 2px #fff, 0 0 0 3.500px #1fc8a0; display: inline-block; } .ig-ph-av img { width: 100%; height: 100%; object-fit: cover; }
+.ig-ph-t { flex: 1; line-height: 1.15; } .ig-ph-t b { font-size: 14px; } .ig-ph-t small { display: block; font-size: 12px; color: #262626; }
+.ig-ph > i { width: 22px; height: 22px; display: inline-flex; } .ig-ph > i svg { width: 100%; height: 100%; }
+.ig-media { position: relative; }
+.ig-car { position: relative; aspect-ratio: 1; overflow: hidden; touch-action: pan-y; background: #efefef; cursor: pointer; }
+.ig-track { display: flex; height: 100%; transition: transform calc(.6s * var(--m-k, 1)) var(--spring); }
+.ig-slide { flex: 0 0 100%; height: 100%; } .ig-slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.ig-badge { position: absolute; top: 12px; right: 12px; background: rgba(20,20,20,.68); color: #fff; font-size: 12px; padding: 4px 10px; border-radius: 14px; }
+.ig-burst { position: absolute; inset: 0; margin: auto; width: 110px; height: 110px; color: #fff; opacity: 0; pointer-events: none; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); } .ig-burst svg { width: 100%; height: 100%; }
+.ig-dots { display: flex; justify-content: center; gap: 5px; padding: 10px 0 0; } .ig-dots i { width: 6px; height: 6px; border-radius: 50%; background: #c7c7c7; transition: background calc(.3s * var(--m-k, 1)), transform calc(.4s * var(--m-k, 1)) var(--spring); } .ig-dots i.on { background: #0e7c74; transform: scale(1.2); }
+.ig-acts { display: flex; align-items: center; gap: 16px; padding: 10px 14px 0; }
+.ig-act { width: 28px; height: 28px; display: grid; place-items: center; color: #111; } .ig-act svg { width: 27px; height: 27px; } .ig-act.liked { color: #ff3355; }
+.ig-grow { flex: 1; }
+.ig-likes, .ig-cap, .ig-c { padding: 0 14px; font-size: 14.5px; line-height: 1.4; } .ig-likes { padding-top: 8px; font-weight: 700; } .ig-cap { padding-top: 3px; }
+.ig-viewall { display: block; padding: 4px 14px 0; color: #737373; font-size: 14.5px; text-align: left; } .ig-viewall.dim { font-size: 13px; }
+.ig-comments { padding-top: 2px; } .ig-time { padding: 6px 14px 0; font-size: 11px; color: #737373; letter-spacing: .02em; }
+.ig-story-host { position: absolute; inset: 0; z-index: 35; pointer-events: none; }
+.ig-story { position: absolute; inset: 0; background: #000; color: #fff; pointer-events: auto; cursor: pointer; user-select: none; }
+.ig-simg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.ig-sshade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.5), transparent 24%, transparent 72%, rgba(0,0,0,.45)); }
+.ig-bars { position: absolute; top: 66px; left: 14px; right: 14px; display: flex; gap: 4px; transition: opacity calc(.25s * var(--m-k, 1)); }
+.ig-bar { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.36); overflow: hidden; } .ig-bar i { display: block; height: 100%; background: #fff; transform-origin: 0 50%; transform: scaleX(0); }
+.ig-shead { position: absolute; top: 80px; left: 14px; right: 14px; display: flex; align-items: center; gap: 10px; transition: opacity calc(.25s * var(--m-k, 1)); } .ig-shead b { font-size: 15px; } .ig-shead small { font-size: 13px; opacity: .7; }
+.ig-shead .ig-ph-av { box-shadow: none; }
+.ig-sclose { width: 32px; height: 32px; display: grid; place-items: center; color: #fff; } .ig-sclose svg { width: 24px; height: 24px; }
+.ig-sfoot { position: absolute; left: 16px; right: 16px; bottom: 30px; display: flex; align-items: center; gap: 14px; transition: opacity calc(.25s * var(--m-k, 1)); }
+.ig-sinput { flex: 1; height: 48px; border-radius: 26px; border: 1.5px solid rgba(255,255,255,.7); display: flex; align-items: center; padding: 0 20px; font-size: 15px; }
+.ig-sfoot i { width: 28px; height: 28px; display: inline-flex; } .ig-sfoot svg { width: 100%; height: 100%; }
+.ig-story.held .ig-bars, .ig-story.held .ig-shead, .ig-story.held .ig-sfoot { opacity: 0; }
+.ph-screen.dark-status ~ * { }

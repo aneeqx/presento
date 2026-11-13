@@ -1,0 +1,92 @@
+{
+  "name": "presento",
+  "version": "0.2.0",
+  "description": "Presento: builds and exports offline client presentations",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis",
+    "predist": "node ../launcher/fetch-webview2.js",
+    "test": "node ../tests/smoke.js"
+  },
+  "devDependencies": {
+    "electron": "^45.3.1",
+    "electron-builder": "^26.18.0"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^6.5.438",
+    "pngjs": "^7.0.0",
+    "qrcode-generator": "^2.0.4",
+    "utif": "^3.1.0"
+  },
+  "author": "Presento",
+  "build": {
+    "appId": "app.presento.desktop",
+    "productName": "Presento",
+    "executableName": "Presento",
+    "copyright": "Presento",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "splash-preload.js",
+      "lib/**",
+      "renderer/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../core",
+        "to": "core"
+      },
+      {
+        "from": "../exporters",
+        "to": "exporters"
+      },
+      {
+        "from": "../runtime",
+        "to": "runtime"
+      },
+      {
+        "from": "../launcher",
+        "to": "launcher",
+        "filter": [
+          "**/*",
+          "!*.exe"
+        ]
+      },
+      {
+        "from": "../tests/open_check.py",
+        "to": "tests/open_check.py"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Presento",
+      "deleteAppDataOnUninstall": false,
+      "uninstallDisplayName": "Presento",
+      "runAfterFinish": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
+    }
+  }
+}

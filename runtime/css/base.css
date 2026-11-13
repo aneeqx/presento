@@ -1,0 +1,274 @@
+/* ==========================================================================
+   Presentation viewer — base: tokens, fonts, background, glass, bar, logo, loader, buttons
+   Palette: Ivory #F6F3EC · Deep Teal #083438 · Mint #2FED97 (single accent)
+   ========================================================================== */
+@font-face { font-family: "Inter"; font-weight: 400 700; src: url("../vendor/fonts/inter-latin-wght-normal.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Source Serif 4"; font-weight: 400 700; src: url("../vendor/fonts/source-serif-4-latin-wght-normal.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Urbanist"; font-weight: 200; src: url("../vendor/fonts/urbanist-latin-200-normal.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Urbanist"; font-weight: 300; src: url("../vendor/fonts/urbanist-latin-300-normal.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Urbanist"; font-weight: 400; src: url("../vendor/fonts/urbanist-latin-400-normal.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Urbanist"; font-weight: 500; src: url("../vendor/fonts/urbanist-latin-500-normal.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "Urbanist"; font-weight: 600; src: url("../vendor/fonts/urbanist-latin-600-normal.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "DM Sans"; font-weight: 300; src: url("../vendor/fonts/dmsans-latin-300-normal.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "DM Sans"; font-weight: 400; src: url("../vendor/fonts/dmsans-latin-400-normal.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "DM Sans"; font-weight: 500; src: url("../vendor/fonts/dmsans-latin-500-normal.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "DM Sans"; font-weight: 700; src: url("../vendor/fonts/dmsans-latin-700-normal.woff2") format("woff2"); font-display: block; }
+
+:root { --edge: clamp(40px, 3.4vw, 72px); }
+/* registered as <length> so getComputedStyle returns resolved px (shell.js reads these for the logo dock) */
+@property --edge { syntax: "<length>"; inherits: true; initial-value: 64px; }
+@property --bar-edge { syntax: "<length>"; inherits: true; initial-value: 64px; }
+@property --bar-top { syntax: "<length>"; inherits: true; initial-value: 64px; }
+@property --bar-bottom { syntax: "<length>"; inherits: true; initial-value: 64px; }
+@property --logo-fs { syntax: "<length>"; inherits: true; initial-value: 44px; }
+@property --logo-h { syntax: "<length>"; inherits: true; initial-value: 53px; }
+:root {
+  --ivory: #F6F3EC;
+  --ivory-2: #EDE8DD;
+  --teal: #083438;
+  --teal-2: #0D4448;
+  --teal-3: #17595D;
+  --mint: #2FED97;
+  --ink-rgb: 8 52 56;                /* text / icon / hairline / shadow colour (space separated). Look token "ink" overrides it (Night = ivory) */
+  --ink: rgb(var(--ink-rgb));
+  --ink-70: rgb(var(--ink-rgb) / .72);
+  --ink-50: rgb(var(--ink-rgb) / .68);   /* R9: was .52 = 3.1:1 on Ivory; .68 = 4.7:1 */
+  --ink-20: rgb(var(--ink-rgb) / .16);
+  --ink-08: rgb(var(--ink-rgb) / .08);
+  --glass-rgb: 255 255 255; --glass-a: .55; --glass-ea: .8; --solid: #fff;   /* light glass surfaces; Night makes them faint white */
+  --btn-r: 999px; --btn-r-ic: 50%;      /* Look token "buttons": pill (default) / round 16px / square 4px */
+  --on-accent: #083438;
+  --glass: rgba(255, 255, 255, .46);
+  --glass-edge: rgba(255, 255, 255, .72);
+  --glass-dark: rgba(8, 52, 56, .74);
+  --r-xl: 32px;
+  --r-lg: 28px;
+  --r-md: 20px;
+  --logo-fs: 44px; --logo-h: 53px;                 /* R12: logo top-left, ~1.9x the old size */
+  --bar-edge: var(--edge); --bar-top: var(--edge); --bar-bottom: var(--edge);   /* one frame margin on all outer sides */
+  --bar-h: var(--logo-h);
+  --bar-btn: 40px; --bar-pill: 46px; --bar-gap: 10px;
+  --edge: clamp(40px, 3.4vw, 72px);                 /* one gutter: logo, bottom bar, home cards and page content share this left/right edge */
+  --top: calc(var(--bar-top) + var(--logo-h) + 24px);       /* content starts under the logo */
+  --bot: calc(var(--bar-bottom) + var(--bar-pill) + 24px);  /* content ends above the bottom bar */
+  --page-bg: #F9F9F7;
+  --font: "Urbanist", "Segoe UI", system-ui, sans-serif;
+  --spring: cubic-bezier(.16, 1, .3, 1);          /* retired spring: critically damped ease-soft (no overshoot); replaced at boot by a critically damped linear() */
+  --dur-xs: 240ms; --dur-s: 400ms; --dur-m: 700ms; --dur-l: 1100ms; --dur-xl: 1600ms; --stagger: 55ms;
+  --ease-io: cubic-bezier(.65, 0, .35, 1); --ease-soft: cubic-bezier(.16, 1, .3, 1); --ease-in: cubic-bezier(.4, 0, 1, 1);
+  --ease-out: cubic-bezier(.22, .61, .36, 1);
+  --shadow-1: 0 18px 50px -18px rgb(var(--ink-rgb) / .28);
+  --shadow-2: 0 30px 80px -24px rgb(var(--ink-rgb) / .38);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--page-bg); overflow-x: clip; scrollbar-width: none; -webkit-text-size-adjust: 100%; }
+html::-webkit-scrollbar { display: none; }
+body {
+  margin: 0; min-height: 100vh; overflow-x: clip;
+  font-family: var(--font); font-weight: 400; font-size: 16px; line-height: 1.45;
+  color: var(--ink); background: transparent;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+button { font: inherit; color: inherit; border: 0; background: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+img, video { display: block; max-width: 100%; }
+h1, h2, h3, p { margin: 0; }
+::selection { background: var(--mint); color: var(--teal); }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---------- ambient background ---------- */
+#bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: var(--page-bg); }   /* R12: flat soft white, no gradient / grain / orbs */
+#bg::after, .orb { display: none; }
+.orb { position: absolute; border-radius: 50%; filter: blur(70px); }
+@keyframes drift1 { to { transform: translate(8vw, 6vw) scale(1.12); } }
+@keyframes drift2 { to { transform: translate(-7vw, -5vw) scale(1.08); } }
+
+/* ---------- glass + dark surfaces ---------- */
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(26px) saturate(1.7); backdrop-filter: blur(26px) saturate(1.7);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--shadow-1), inset 0 1px 0 rgba(255,255,255,.85);
+}
+.glass-dark {
+  background: var(--glass-dark);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4); backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,.1); color: var(--ivory);
+  box-shadow: var(--shadow-2), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.dark { background: var(--teal); color: var(--ivory); }
+
+/* ---------- type ---------- */
+.eyebrow { font-size: 11.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-50); }
+.display { font-weight: 200; letter-spacing: -.035em; line-height: .98; font-size: clamp(48px, 5.4vw, 92px); }
+.lead { font-size: 15.5px; line-height: 1.55; color: var(--ink-70); font-weight: 400; }
+
+/* ---------- bottom bar (R12, SPEC-R12): Finish bottom-left; Home / Back / Restart / Fullscreen bottom-right. Transparent, click-through container. ---------- */
+#bar {
+  position: fixed; z-index: 110; left: var(--bar-edge); right: var(--bar-edge); bottom: var(--bar-bottom); top: auto; height: auto;
+  display: flex; justify-content: space-between; align-items: center; padding: 0; border-radius: 0;
+  background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; pointer-events: none;
+  transition: opacity calc(.6s * var(--m-k, 1)) var(--ease-out), transform calc(.8s * var(--m-k, 1)) var(--ease-soft);
+}
+#bar > * { pointer-events: auto; }
+#bar .bar-mid, #bar #crumb { display: none; }
+body.booting #bar { opacity: 0; transform: translateY(30px); pointer-events: none; }
+.bar-left, .bar-right { display: flex; align-items: center; gap: var(--bar-gap); }
+.bar-right { justify-content: flex-end; }
+.icon-btn {
+  width: 44px; height: 44px; border-radius: var(--btn-r-ic); display: grid; place-items: center;
+  background: rgb(var(--glass-rgb) / var(--glass-a)); border: 1px solid rgb(var(--glass-rgb) / var(--glass-ea)); color: var(--ink);
+  transition: transform calc(.5s * var(--m-k, 1)) var(--spring), background calc(.25s * var(--m-k, 1)), color calc(.25s * var(--m-k, 1));
+}
+.icon-btn:hover { background: var(--teal); color: var(--ivory); transform: scale(1.08); }
+.icon-btn:active { transform: scale(.94); }
+.icon-btn svg { width: 20px; height: 20px; }
+#bar .icon-btn { width: var(--bar-btn); height: var(--bar-btn); background: var(--solid); border: 1px solid rgb(var(--ink-rgb) / .14); box-shadow: 0 8px 20px -12px rgb(var(--ink-rgb) / .35); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); transition: transform var(--dur-s) var(--ease-out), background-color var(--dur-xs), color var(--dur-xs), opacity var(--dur-s) var(--ease-out); }
+#bar .icon-btn:hover { background: var(--teal); color: var(--ivory); border-color: var(--teal); transform: scale(1.06); }
+#bar .icon-btn:active { transform: scale(.95); }
+/* Restart: understated (no fill, no border, faded); full button on hover */
+#bar .icon-btn.quiet, #bar #btn-restart { background: none; border-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--ink-50); opacity: .75; }
+#bar .icon-btn.quiet:hover, #bar #btn-restart:hover { background: var(--teal); color: var(--ivory); opacity: 1; }
+#bar #btn-back.hide { opacity: 0; pointer-events: none; transform: none; }   /* slot stays reserved: nothing jumps */
+#bar .btn-pill { --ph: var(--bar-pill); }
+#bar .btn-pill .bp-label { font-size: 13.5px; }
+
+/* ---------- logo (landing → docked) ---------- */
+#logo {
+  position: fixed; z-index: 120; left: 50%; top: calc(var(--bar-top) + var(--logo-h) / 2);
+  transform: translate(-50%, -50%); font-size: var(--logo-fs); line-height: 1; white-space: nowrap; pointer-events: none;
+  display: flex; align-items: center; gap: .28em; color: var(--ink);
+}
+/* landing intro video (official logo animation). The file's background is white (251 -> 255 over the first second). `darken` keeps the darker of video/page per
+   channel: the white vanishes into the Ivory page + mint orbs, and the (dark) logo ink keeps its exact colours (multiply would tint it ~5 % toward the page). */
+#intro-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 66; pointer-events: none; background: transparent; mix-blend-mode: darken; }
+/* R12: resting place = top-left (class added by shell.js after the dock animation) */
+#logo.docked { left: var(--bar-edge); top: calc(var(--bar-top) + var(--logo-h) / 2); transform: translate(0, -50%); font-size: var(--logo-fs); }
+#logo.clickable { pointer-events: auto; cursor: pointer; }
+.lg-orb { width: .62em; height: .62em; border-radius: 50%; background: var(--mint); box-shadow: 0 0 .5em var(--mint), 0 0 1.4em rgba(47,237,151,.7); flex: none; margin-right: .1em; }
+.lg-a { font-weight: 600; letter-spacing: -.02em; }
+.lg-b { font-weight: 200; letter-spacing: -.01em; }
+.lg-ch { display: inline-block; }
+#logo img { flex: none; max-width: none; }      /* never squeezed by the container (the big landing size is wider than the space right of left:50%) */
+#logo img, #loader .ld-logo img { height: 1.2em; width: auto; display: block; user-select: none; -webkit-user-drag: none; }   /* logo SVG is used as-is: only sized, never recoloured or edited */
+
+/* ---------- loader (between fly-out and fly-in) ---------- */
+#loader {
+  position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; pointer-events: none; opacity: 0;
+}
+#loader { mix-blend-mode: darken; }       /* spec says multiply; darken keeps the logo ink colours exact (multiply tinted the green ~5 %) */
+#loader .ld-video { position: absolute; left: 50%; top: 50%; width: 100vw; height: 56.25vw; translate: -50% -50%; scale: var(--ld-scale, .66); object-fit: cover; -webkit-mask-image: radial-gradient(closest-side, #000 70%, transparent 100%); mask-image: radial-gradient(closest-side, #000 70%, transparent 100%); }
+#loader .ld { display: flex; flex-direction: column; align-items: center; gap: 20px; font-size: 38px; }
+#loader .ld-logo { display: flex; align-items: center; gap: .28em; color: var(--ink); position: relative; }
+@keyframes sweep { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+
+/* ---------- stage / pages ---------- */
+#stage { position: relative; z-index: 1; min-height: 100vh; }
+/* (#stage.busy no longer blocks input: router.js queues a click that lands mid-transition) */
+.page { position: relative; }
+.page.pre { visibility: hidden; }
+
+/* ---------- buttons ---------- */
+/* action pill: Deep Teal pill, round icon chip inside it. Hover = arrow slides through, chip goes mint with a soft glow.
+   "Hot" state is also driven by a parent (.tile.on / .pf-info:hover) so the whole card can light the button. */
+.btn-pill {
+  --ph: 46px; --pc: 34px;
+  position: relative; display: inline-flex; align-items: center; gap: 14px; height: var(--ph); padding: 0 calc((var(--ph) - var(--pc)) / 2) 0 22px;
+  border-radius: var(--btn-r); background: var(--teal); color: var(--ivory); white-space: nowrap; flex: none;
+  box-shadow: 0 10px 24px -12px rgba(8,52,56,.55); transition: box-shadow calc(.45s * var(--m-k, 1)), transform calc(.6s * var(--m-k, 1)) var(--spring);
+}
+.btn-pill .bp-label { font-size: 14.5px; font-weight: 500; letter-spacing: .01em; line-height: 1; padding-bottom: 1px; }
+.btn-pill .bp-ico { position: relative; width: var(--pc); height: var(--pc); border-radius: 50%; overflow: hidden; display: block; flex: none; background: rgba(246,243,236,.14); color: var(--ivory); transition: background-color calc(.35s * var(--m-k, 1)), color calc(.35s * var(--m-k, 1)), box-shadow calc(.45s * var(--m-k, 1)); }
+.btn-pill .bp-ico i { position: absolute; inset: 0; display: grid; place-items: center; transition: transform calc(.55s * var(--m-k, 1)) var(--spring), opacity calc(.3s * var(--m-k, 1)); }
+.btn-pill .bp-ico svg { width: 17px; height: 17px; display: block; }
+.btn-pill .a2 { transform: translateX(-130%); opacity: 0; }
+.btn-pill:hover, .tile.on .btn-pill, .pf-info:hover .btn-pill { box-shadow: 0 14px 30px -12px rgba(8,52,56,.6), 0 0 0 4px rgba(47,237,151,.18); }
+.btn-pill:hover .bp-ico, .tile.on .bp-ico, .pf-info:hover .bp-ico { background: var(--mint); color: var(--teal); box-shadow: 0 0 18px rgba(47,237,151,.75); }
+.btn-pill:hover .a1, .tile.on .a1, .pf-info:hover .a1 { transform: translateX(130%); opacity: 0; }
+.btn-pill:hover .a2, .tile.on .a2, .pf-info:hover .a2 { transform: none; opacity: 1; }
+.btn-pill:active { transform: scale(.97); }
+/* back: mirrored (chip first, arrow slides left) */
+.btn-pill.back { flex-direction: row-reverse; padding: 0 22px 0 calc((var(--ph) - var(--pc)) / 2); }
+.btn-pill.back .a2 { transform: translateX(130%); }
+.btn-pill.back:hover .a1 { transform: translateX(-130%); }
+.btn-pill.back:hover .a2 { transform: none; opacity: 1; }
+/* mint pill (secondary action on dark surfaces); .static = icon spins instead of sliding */
+.btn-pill.mint { background: var(--mint); color: var(--teal); box-shadow: 0 10px 30px -10px rgba(47,237,151,.7); }
+.btn-pill.mint .bp-ico { background: var(--teal); color: var(--mint); }
+.btn-pill.mint:hover { box-shadow: 0 14px 36px -10px rgba(47,237,151,.9), 0 0 0 4px rgba(47,237,151,.25); }
+.btn-pill.mint:hover .bp-ico { background: var(--teal); color: var(--mint); box-shadow: none; }
+.btn-pill.static .a2 { display: none; }
+.btn-pill.static:hover .a1 { transform: rotate(180deg); opacity: 1; }
+.btn-pill[hidden] { display: none; }
+/* icon-only (small bento tiles) */
+.btn-pill.round { width: var(--ph); padding: 0; justify-content: center; gap: 0; background: rgba(246,243,236,.88); color: var(--teal); border-radius: var(--btn-r-ic); }
+.btn-pill.round .bp-label { display: none; }
+.btn-pill.round .bp-ico { background: transparent; color: inherit; }
+.btn-pill.round:hover, .tile.on .btn-pill.round { background: var(--mint); color: var(--teal); }
+.btn-pill.round:hover .bp-ico, .tile.on .btn-pill.round .bp-ico { background: transparent; box-shadow: none; }
+#btn-back { transition: opacity calc(.35s * var(--m-k, 1)), transform calc(.6s * var(--m-k, 1)) var(--spring); }
+#btn-back.hide { opacity: 0; pointer-events: none; transform: translateX(-14px); }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 10px; height: 42px; padding: 0 20px; border-radius: 999px; font-size: 14.5px; font-weight: 500;
+  background: rgb(var(--glass-rgb) / var(--glass-a)); border: 1px solid rgb(var(--glass-rgb) / var(--glass-ea)); color: var(--ink); white-space: nowrap;
+  transition: background calc(.3s * var(--m-k, 1)), color calc(.3s * var(--m-k, 1)), transform calc(.5s * var(--m-k, 1)) var(--spring), box-shadow calc(.3s * var(--m-k, 1));
+}
+.chip:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 10px 24px -12px rgba(8,52,56,.4); }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-20); transition: background calc(.3s * var(--m-k, 1)), box-shadow calc(.3s * var(--m-k, 1)); }
+.chip.on { background: var(--teal); color: var(--ivory); border-color: var(--teal); }
+.chip.on .dot { background: var(--mint); box-shadow: 0 0 10px var(--mint); }
+.chip .n { opacity: .55; font-weight: 400; font-size: 12.5px; margin-left: 2px; }
+
+.play-btn {
+  width: 64px; height: 64px; border-radius: 50%; background: var(--mint); color: var(--teal); display: grid; place-items: center;
+  box-shadow: 0 0 0 0 rgba(47,237,151,.55), 0 12px 32px -8px rgba(47,237,151,.8); transition: transform calc(.5s * var(--m-k, 1)) var(--spring);
+}
+.play-btn svg { width: 24px; height: 24px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: calc(.001ms * var(--m-k, 1)) !important; scroll-behavior: auto !important; }
+  .orb { animation: none !important; }
+}
+
+/* ---------- start gate + attract screen (tokens: defaults only, the design spec sets the final values) ---------- */
+:root { --gate-size: 15px; --gate-track: .26em; --at-hint-bottom: 56px; --at-hint-size: 13px; --at-hint-track: .26em; --at-hint-alpha: .72; }
+#gate { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; cursor: pointer; -webkit-user-select: none; user-select: none; }
+#gate .gate-t { font-size: var(--gate-size); letter-spacing: var(--gate-track); text-transform: uppercase; color: var(--ink-70); font-weight: 500; animation: gatepulse 2.4s ease-in-out infinite alternate; }
+@keyframes gatepulse { from { opacity: .55; } to { opacity: 1; } }
+#attract { position: fixed; inset: 0; z-index: 64; visibility: hidden; overflow: hidden; background: transparent; pointer-events: none; }
+#attract .at-media { position: absolute; inset: 0; opacity: 0; background: #050d0e; }
+#attract video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; filter: grayscale(1) brightness(.42) contrast(1.12); transition: opacity var(--dur-l) var(--ease-io); }
+#attract video.on { opacity: 1; }
+#attract .at-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 42%, rgba(0,0,0,.55) 100%); }
+#attract .at-dim { position: absolute; inset: 0; background: rgba(0,0,0,.18); }
+#attract .at-hint { position: absolute; left: 0; right: 0; bottom: 56px; display: flex; flex-direction: column; align-items: center; gap: 12px; opacity: 0; color: rgba(255,255,255,.78); font-size: 15px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; }
+html.is-touch #attract .at-hint { bottom: 88px; font-size: 17px; }
+#attract .at-hint span { display: inline-flex; align-items: center; gap: 12px; }
+#attract .at-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--mint); margin-left: -18px; margin-top: 0; translate: -100% 0; display: none; }
+#attract .at-hint span::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--mint); }
+#attract .at-rule { width: 36px; height: 1px; background: rgba(255,255,255,.28); }
+#attract .at-hint.pulse { animation: gatepulse 2.6s var(--ease-io) infinite alternate; }
+#logo .logo-white { position: absolute; left: 0; top: 0; filter: brightness(0) invert(1) drop-shadow(0 2px 24px rgba(0,0,0,.35)); }
+
+/* attract taglines (SPEC-R7 §6.3) */
+#attract .at-tagline { position: absolute; left: 0; right: 0; top: 60%; text-align: center; opacity: 0; font-family: "DM Sans", var(--font); font-weight: 400; text-transform: uppercase; letter-spacing: .34em; font-size: clamp(14px, 1.25vw, 26px); color: rgba(255,255,255,.88); text-shadow: 0 2px 18px rgba(0,0,0,.45); white-space: nowrap; }
+html.is-touch #attract .at-tagline { font-size: clamp(15px, 1.7vw, 20px); }
+@media (max-width: 520px) { #attract .at-tagline { letter-spacing: .24em; font-size: 13px; } }
+#btn-finish { flex: none; }
+
+
+/* ==========================================================================
+   R9 · POINTER TYPE SCALE — calmer, smaller, for a projector / large TV. Values are px at 1920x1080.
+   Touch keeps its own sizes (touch.css). 4K at 200 % OS scaling is a 1920x1080 CSS viewport, so it renders exactly the same, sharper.
+   ========================================================================== */
+html.is-pointer .eyebrow { font-size: 11.5px; letter-spacing: .15em; }
+html.is-pointer .lead { font-size: 14px; line-height: 1.6; }
+html.is-pointer .btn-pill .bp-label, html.is-pointer .chip { font-size: 13.5px; }
+html.is-pointer .chip .n { font-size: 11.5px; }
+html.is-pointer #crumb, html.is-pointer .crumb { font-size: 11px; }
+html.is-pointer #attract .at-hint { font-size: 12.5px; }
+html.is-pointer #attract .at-tagline { font-size: clamp(13px, .95vw, 20px); }
+html.is-pointer #gate .gate-t { font-size: 13px; }
+

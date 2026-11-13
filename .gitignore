@@ -1,0 +1,10 @@
+node_modules/
+dist/
+release/
+.out/
+*.tmp
+*.log
+# fetched at build time (node launcher/fetch-webview2.js)
+launcher/vendor/
+# optional local add-on (see README)
+runtime/addons/

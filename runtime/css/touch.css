@@ -1,0 +1,196 @@
+/* ==========================================================================
+   TOUCH BUILD — everything here is scoped to html.is-touch (set by js/core/input.js),
+   so the pointer (mouse) build is untouched.  Palette/look unchanged; bigger, roomier, no hover reliance.
+   ========================================================================== */
+
+/* ---------- browser hygiene ---------- */
+html.is-touch { overscroll-behavior: none; touch-action: manipulation; -webkit-text-size-adjust: 100%; }   /* no pull-to-refresh / bounce, no double-tap page zoom */
+html.is-touch body { overscroll-behavior: none; touch-action: manipulation; }
+html.is-touch, html.is-touch * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+html.is-touch img, html.is-touch video { -webkit-user-drag: none; }
+html.is-touch input, html.is-touch textarea { -webkit-user-select: text; user-select: text; }
+html.is-touch :focus-visible { outline: none; }
+html.is-touch .tile { touch-action: none; }                        /* press-and-hold focus-shift: the tile owns the pointer (home never scrolls) */
+html.is-touch .lb-stage, html.is-touch .flat-stage { touch-action: none; }   /* lightbox / flat panorama: our own swipe, pinch, pan */
+html.is-touch .pv-host, html.is-touch .pv-host * { touch-action: none; }     /* Pannellum keeps its own touch drag / pinch */
+html.is-touch .pl-track, html.is-touch .cb-slider { touch-action: none; }
+html.is-touch .ig-story { touch-action: none; }
+html.is-touch .ig-scroll, html.is-touch .ig-hl { touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+html.is-touch .ig-hl { touch-action: pan-x; }
+html.is-touch .ig-car { touch-action: pan-y; }
+html.is-touch .cb-frame { touch-action: pan-y; }
+
+/* ---------- touch size tokens: defaults only; the design lead sets the final values here, in one place ---------- */
+html.is-touch {
+  --t-edge: 28px;            /* page gutter */
+  --t-bar-h: 76px;           /* glass bar height */
+  --t-bar-top: 18px;
+  --t-gap: 24px;             /* bento gap */
+  --t-gap-content: 22px;     /* masonry / video / panorama grids */
+  --t-gap-grid: 18px;        /* social grid */
+  --t-gap-frame: 28px;       /* side card <-> content */
+  --t-side-pad: 32px 28px 30px;
+  --t-target: 48px;          /* smallest allowed tap target */
+  --t-pill-h: 58px;          /* action pills (Back / Explore / Open / View in 360) */
+  --t-pill-chip: 44px;
+  --t-pill-gap: 16px;
+  --t-pill-font: 16.5px;
+  --t-pill-icon: 20px;
+  --t-icon-btn: 56px;        /* bar / lightbox / player round buttons */
+  --t-icon-btn-svg: 24px;
+  --t-chip-h: 54px;
+  --t-chip-pad: 26px;
+  --t-chip-font: 16.5px;
+  --t-chip-gap: 14px;
+  --t-bar-gap: 12px;
+  --t-nav: 68px;             /* lightbox prev / next */
+  --t-nav-svg: 28px;
+  --t-counter-h: 52px;
+  --t-counter-pad: 24px;
+  --t-pl-ico: 56px;          /* player buttons */
+  --t-pl-ico-svg: 25px;
+  --t-pl-play: 68px;
+  --t-pl-track: 48px;        /* player scrub bar hit area */
+  --t-pl-track-line: 8px;
+  --t-pl-knob: 26px;
+  --t-pl-title: 16px;
+  --t-pl-times: 13px;
+  --t-pv-back-h: 58px;       /* 360 "Flat view" */
+  --t-pv-back-pad: 0 28px 0 14px;
+  --t-pv-back-font: 16px;
+  --t-pv-back-chip: 36px;
+  --t-cb-btn: 54px;          /* flipbook toolbar */
+  --t-cb-btn-sm: 48px;
+  --t-cb-txt-pad: 0 20px 0 14px;
+  --t-cb-pos-min: 110px;
+  --t-cb-pos-font: 15px;
+  --t-cb-close: 58px;
+  --t-cb-toc-pad: 16px;
+  --t-cb-toc-font: 15.5px;
+  --t-cb-bar-gap: 6px;
+  --t-cb-bar-pad: 7px;
+  --t-cb-bar-bottom: 26px;
+  --t-cb-scrub-bottom: 100px;
+  --t-cb-scrub-pad: 18px;
+  --t-cb-slider: 48px;
+  --t-cb-slider-line: 8px;
+  --t-cb-slider-thumb: 30px;
+  --t-cb-hint-top: 34px;
+  --t-pf-info-pad: 16px 16px 16px 24px;
+  --t-phone-hit: -14px;      /* invisible hit-area growth around the phone mock's small glyph buttons */
+  --fs-xs: 12px;
+  --t-index: 32px;           /* social grid index badge */
+  --t-focus-on: 1.03;        /* bento pressed tile scale */
+  --t-focus-off: .965;       /* bento other tiles scale */
+  --t-side-w: 268px;         /* side card width on landscape tablets (900-1180 px) */
+}
+html.is-touch { --edge: 44px; --logo-fs: 48px; --logo-h: 58px; --bar-btn: var(--t-pill-h); --bar-pill: var(--t-pill-h); --bar-gap: var(--t-bar-gap); }
+html.is-touch #bar .btn-pill .bp-label { font-size: var(--t-pill-font); }
+
+/* ---------- roomier layout ---------- */
+html.is-touch .page.frame { gap: var(--t-gap-frame); }
+html.is-touch .masonry, html.is-touch .vgrid, html.is-touch .ptgrid { gap: var(--t-gap-content); }
+html.is-touch .mcol { gap: var(--t-gap-content); }
+html.is-touch .sg-grid { gap: var(--t-gap-grid); }
+html.is-touch .side { padding: var(--t-side-pad); }
+
+/* ---------- tap targets (>= var(--t-target)) ---------- */
+html.is-touch .btn-pill { --ph: var(--t-pill-h); --pc: var(--t-pill-chip); gap: var(--t-pill-gap); }
+html.is-touch .btn-pill .bp-label { font-size: var(--t-pill-font); }
+html.is-touch .btn-pill .bp-ico svg { width: var(--t-pill-icon); height: var(--t-pill-icon); }
+html.is-touch .icon-btn { width: var(--t-icon-btn); height: var(--t-icon-btn); }
+html.is-touch .icon-btn svg { width: var(--t-icon-btn-svg); height: var(--t-icon-btn-svg); }
+html.is-touch .bar-right { gap: var(--t-bar-gap); }
+html.is-touch .chip { height: var(--t-chip-h); padding: 0 var(--t-chip-pad); font-size: var(--t-chip-font); }
+html.is-touch .chips { gap: var(--t-chip-gap); }
+html.is-touch .lb-nav { width: var(--t-nav); height: var(--t-nav); } html.is-touch .lb-nav svg { width: var(--t-nav-svg); height: var(--t-nav-svg); }
+html.is-touch .lb-top .icon-btn { width: var(--t-icon-btn); height: var(--t-icon-btn); }
+html.is-touch .lb-count { height: var(--t-counter-h); padding: 0 var(--t-counter-pad); }
+html.is-touch .lb-actions .btn-pill { --ph: var(--t-pill-h); }
+html.is-touch .pl-ico { width: var(--t-pl-ico); height: var(--t-pl-ico); } html.is-touch .pl-ico svg { width: var(--t-pl-ico-svg); height: var(--t-pl-ico-svg); }
+html.is-touch .pl-play { width: var(--t-pl-play); height: var(--t-pl-play); }
+html.is-touch .pl-top .icon-btn, html.is-touch .pl-top .pl-ico { width: var(--t-icon-btn); height: var(--t-icon-btn); }
+html.is-touch .pl-count { height: var(--t-counter-h); }
+html.is-touch .pv-back { height: var(--t-pv-back-h); padding: var(--t-pv-back-pad); font-size: var(--t-pv-back-font); } html.is-touch .pv-back i { width: var(--t-pv-back-chip); height: var(--t-pv-back-chip); }
+html.is-touch .cb-btn { width: var(--t-cb-btn); height: var(--t-cb-btn); } html.is-touch .cb-btn.sm { width: var(--t-cb-btn-sm); height: var(--t-cb-btn-sm); }
+html.is-touch .cb-btn.txt { width: auto; padding: var(--t-cb-txt-pad); }
+html.is-touch .cb-pos { height: var(--t-cb-btn); min-width: var(--t-cb-pos-min); font-size: var(--t-cb-pos-font); }
+html.is-touch .cb-close.cb-btn { width: var(--t-cb-close); height: var(--t-cb-close); }
+html.is-touch .cb-toci { padding: var(--t-cb-toc-pad); font-size: var(--t-cb-toc-font); }
+html.is-touch .cb-bar { gap: var(--t-cb-bar-gap); padding: var(--t-cb-bar-pad); bottom: var(--t-cb-bar-bottom); }
+html.is-touch .cb-scrub { bottom: var(--t-cb-scrub-bottom); padding: var(--t-cb-scrub-pad) 0; }
+html.is-touch .cb-slider { height: var(--t-cb-slider); background-size: 100% var(--t-cb-slider-line); background-repeat: no-repeat; background-position: 0 50%; border-radius: 0; } html.is-touch .cb-slider::-webkit-slider-thumb { width: var(--t-cb-slider-thumb); height: var(--t-cb-slider-thumb); }
+html.is-touch .cb-hint { top: var(--t-cb-hint-top); }
+html.is-touch .tile-cta .btn-pill.round { --ph: var(--t-pill-h); }
+html.is-touch .pf-info { padding: var(--t-pf-info-pad); }
+
+/* the iPhone mock: the app inside is a scaled-down picture of a real phone, so grow the *hit areas* (invisible) */
+html.is-touch .ig-act, html.is-touch .ig-back, html.is-touch .ig-sclose, html.is-touch .ig-tabbar i, html.is-touch .ig-top-r i, html.is-touch .ig-hl-i, html.is-touch .ig-cell { position: relative; }
+html.is-touch .ig-act::after, html.is-touch .ig-back::after, html.is-touch .ig-sclose::after, html.is-touch .ig-tabbar i::after, html.is-touch .ig-top-r i::after { content: ""; position: absolute; inset: var(--t-phone-hit); }
+
+/* ---------- nothing essential on hover ---------- */
+html.is-touch .m-item .m-cap { opacity: 1; transform: none; }
+html.is-touch .sg-item .m-cap { display: none; }                  /* social grid: the picture is the content, tapping opens it large */
+html.is-touch .pf-shine { display: none; }
+html.is-touch .cb-btn[data-tip]:hover::before { display: none; }
+html.is-touch .pl.idle .pl-bar, html.is-touch .pl.idle .pl-top { opacity: 1; translate: -50% 0; pointer-events: auto; }   /* player controls are always visible */
+html.is-touch .pl.idle .pl-top { translate: none; }
+html.is-touch .pl.idle { cursor: auto; }
+html.is-touch .pl-track { height: var(--t-pl-track); }
+html.is-touch .pl-track::before, html.is-touch .pl-track i { height: var(--t-pl-track-line); }
+html.is-touch .pl-knob { width: var(--t-pl-knob) !important; height: var(--t-pl-knob) !important; scale: 1; }
+html.is-touch .pl-title { font-size: var(--t-pl-title); } html.is-touch .pl-times { font-size: var(--t-pl-times); }
+
+/* ---------- press feedback instead of hover ---------- */
+html.is-touch .btn-pill:active { transform: scale(.96); }
+html.is-touch .chip:active { transform: scale(.96); }
+html.is-touch .ptcard:active, html.is-touch .vcard:active, html.is-touch .m-item:active, html.is-touch .sg-item:active { translate: 0 -2px; }
+/* bento: pressed tile does the focus-shift a little stronger than the pointer hover (it is the only feedback a finger gets) */
+
+/* lightbox: caption steps aside while a picture is zoomed in */
+html.is-touch .lb-cap { transition: opacity calc(.3s * var(--m-k, 1)); }
+html.is-touch .lb.lb-zoomed .lb-cap { opacity: 0; pointer-events: none; }
+
+/* landscape tablets (900–1180 px wide): keep the side card + content side by side instead of stacking (the pointer build stacks at <= 1180 px) */
+@media (min-width: 900px) and (max-width: 1180px) {
+  html.is-touch .page.frame { grid-template-columns: var(--t-side-w) minmax(0, 1fr); gap: 24px; }
+  html.is-touch .side { position: sticky; top: var(--top); max-height: calc(100vh - var(--top) - 24px); }
+  html.is-touch .chips { flex-direction: column; flex-wrap: nowrap; }
+  html.is-touch .social { gap: 28px; }
+  html.is-touch .sg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* no "sticky hover": a finger leaves :hover state behind after a tap, so neutralise the hover looks and use :active (the press) instead */
+html.is-touch .chip:not(.on):hover { transform: none; box-shadow: none; }
+html.is-touch .icon-btn:hover { background: rgb(var(--glass-rgb) / var(--glass-a)); color: var(--ink); transform: none; }
+html.is-touch .glass-dark.icon-btn:hover { background: var(--glass-dark); color: var(--ivory); }
+html.is-touch .glass-dark.icon-btn:active, html.is-touch .icon-btn:active { background: var(--mint); color: var(--teal); }
+html.is-touch .vcard:hover, html.is-touch .ptcard:hover, html.is-touch .m-item:hover, html.is-touch .sg-item:hover { translate: 0 0; box-shadow: var(--shadow-1); z-index: auto; }
+html.is-touch .vcard:hover .vc-poster, html.is-touch .vcard:hover .vc-video, html.is-touch .ptcard:hover img, html.is-touch .m-item:hover img, html.is-touch .sg-item:hover img { scale: 1; }
+html.is-touch .vcard:hover .play-btn { transform: none; box-shadow: 0 0 0 0 rgba(47,237,151,.55), 0 12px 32px -8px rgba(47,237,151,.8); }
+html.is-touch .pl-ico:hover, html.is-touch .cb-btn:hover, html.is-touch .pl-play:hover { background-color: transparent; transform: none; }
+html.is-touch .pl-play:hover { background-color: var(--mint); }
+html.is-touch .pl-ico:active, html.is-touch .cb-btn:active { background-color: rgba(8,52,56,.14); }
+html.is-touch .pv-back:hover { background: var(--glass-dark); color: var(--ivory); } html.is-touch .pv-back:hover i { background: rgba(246,243,236,.14); color: inherit; }
+html.is-touch .btn-pill:hover:not(.mint) { box-shadow: 0 10px 24px -12px rgba(8,52,56,.55); }
+html.is-touch .btn-pill:hover:not(.mint):not(.round) .bp-ico { background: rgba(246,243,236,.14); color: var(--ivory); box-shadow: none; }
+html.is-touch .btn-pill:hover:not(.mint) .a1 { transform: none; opacity: 1; }
+html.is-touch .btn-pill:hover:not(.mint) .a2 { transform: translateX(-130%); opacity: 0; }
+html.is-touch .btn-pill.back:hover .a2 { transform: translateX(130%); }
+html.is-touch .tile.on .btn-pill:not(.mint) .a1 { transform: translateX(130%); opacity: 0; } html.is-touch .tile.on .btn-pill:not(.mint) .a2 { transform: none; opacity: 1; }
+html.is-touch .tile.on .btn-pill:not(.mint):not(.round) .bp-ico { background: var(--mint); color: var(--teal); box-shadow: 0 0 18px rgba(47,237,151,.75); }
+html.is-touch .btn-pill:active:not(.mint):not(.round) .bp-ico { background: var(--mint); color: var(--teal); }
+
+
+/* ==========================================================================
+   R9 · touch: type floor (nothing under 12 / readable copy 13+), plus review items that are CSS-only
+   ========================================================================== */
+html.is-touch .eyebrow { font-size: 12.5px; }
+html.is-touch .lead { font-size: 16px; }
+html.is-touch .side-meta, html.is-touch .chip .n, html.is-touch .tile-count { font-size: 13px; }
+html.is-touch .m-item .m-cap { display: none; }                  /* R03: the title lives in the lightbox; photographs stay clean */
+html.is-touch .lb-count, html.is-touch .pl-count { height: var(--t-counter-h, 56px); }
+html.is-touch .ig-tabs i, html.is-touch .ig-viewall { position: relative; }
+html.is-touch .ig-tabs i::after { content: ""; position: absolute; inset: var(--t-phone-hit, -14px) 0; }
+html.is-touch .ig-viewall::after { content: ""; position: absolute; inset: -16px -8px; }
+html.is-touch .sg-item::before { content: attr(data-i); position: absolute; left: 12px; top: 12px; min-width: var(--t-index); height: var(--t-index); padding: 0 10px; border-radius: 999px; display: grid; place-items: center; font: 500 var(--fs-xs)/1 var(--font); letter-spacing: .06em; background: var(--glass-dark); color: var(--ivory); border: 1px solid rgba(255,255,255,.1); }

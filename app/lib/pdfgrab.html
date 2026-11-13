@@ -1,0 +1,45 @@
+<!doctype html><meta charset="utf-8"><body><script type="module">
+// Hidden helper page (pdf.js): opens a PDF, renders pages to PNG at a given dpi, reads links and bookmarks. Nothing is shown.
+import * as pdfjs from "../node_modules/pdfjs-dist/build/pdf.min.mjs";
+pdfjs.GlobalWorkerOptions.workerSrc = new URL("../node_modules/pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
+let pdf = null;
+window.openPdf = async function (url, password) {
+  try { pdf = await pdfjs.getDocument({ url, password: password || undefined, isEvalSupported: false }).promise; }
+  catch (e) { return { error: e.name === "PasswordException" ? "password" : /Invalid PDF|Missing PDF/i.test(e.message) ? "damaged" : e.message }; }
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) { const p = await pdf.getPage(i), v = p.getViewport({ scale: 1 }); pages.push({ w: v.width, h: v.height }); }
+  return { n: pdf.numPages, pages };
+};
+window.renderPng = async function (n, dpi, maxSide) {
+  const page = await pdf.getPage(n); let scale = dpi / 72, v = page.getViewport({ scale });
+  const m = Math.max(v.width, v.height); if (m > maxSide) { scale *= maxSide / m; v = page.getViewport({ scale }); }
+  const c = document.createElement("canvas"); c.width = Math.round(v.width); c.height = Math.round(v.height);
+  const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
+  await page.render({ canvasContext: ctx, viewport: v }).promise;
+  const url = c.toDataURL("image/png"); const r = { dataUrl: url, w: c.width, h: c.height }; page.cleanup(); return r;
+};
+async function destPage(d) {
+  try { if (typeof d === "string") d = await pdf.getDestination(d); if (!d) return null; const r = d[0]; return typeof r === "object" ? (await pdf.getPageIndex(r)) + 1 : r + 1; } catch (e) { return null; }
+}
+window.readLinks = async function () {
+  const out = {};
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i), v = page.getViewport({ scale: 1 }), an = await page.getAnnotations(), list = [];
+    for (const a of an) {
+      if (a.subtype !== "Link" || !a.rect) continue;
+      const vw = page.view[2] - page.view[0], vh = page.view[3] - page.view[1], x = (Math.min(a.rect[0], a.rect[2]) - page.view[0]) / vw, y = (page.view[3] - Math.max(a.rect[1], a.rect[3])) / vh, w = Math.abs(a.rect[2] - a.rect[0]) / vw, h = Math.abs(a.rect[3] - a.rect[1]) / vh;     /* rotation 0 pages */
+      const box = { x: +x.toFixed(5), y: +y.toFixed(5), w: +w.toFixed(5), h: +h.toFixed(5) };
+      if (a.url) list.push(Object.assign(box, { url: a.url }));
+      else if (a.dest) { const to = await destPage(a.dest); if (to) list.push(Object.assign(box, { to })); }
+    }
+    if (list.length) out[i] = list;
+  }
+  return out;
+};
+window.readOutline = async function () {
+  const o = await pdf.getOutline(), res = [];
+  async function walk(items, level) { for (const it of items || []) { const p = await destPage(it.dest); if (p && level <= 1) res.push({ title: it.title, page: p, level }); if (it.items && it.items.length && level < 1) await walk(it.items, level + 1); } }
+  await walk(o, 0); return res;
+};
+window.__ready = true;
+</script>
